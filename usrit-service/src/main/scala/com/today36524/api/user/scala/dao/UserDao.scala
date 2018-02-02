@@ -284,7 +284,7 @@ class UserDao {
                                   request:FindUsersByPageRequest) : SQLWithArgs = {
     originSqlPrefix +
     sql""" where 1=1 """ +
-      (if(request.userName.isDefined) sql""" and user_name=${request.userName.get} """
+      (if(request.userName.isDefined) sql""" and user_name like concat('%',${request.userName.get},'%') """
       else sql"""""") +
       (if(request.telephone.isDefined) sql""" and telephone=${request.telephone.get} """
         else sql"""""") +

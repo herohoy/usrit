@@ -26,6 +26,7 @@ class UserServiceImpl extends UserService {
   val MAIL_REG = """^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$""".r
   val QQ_REG = """\d{4,12}""".r
   val INT_REG = """^[0-9]{1,10}$""".r
+  val ORDER_REG = """[\s]*([a-z]{1}[A-Za-z0-9_]{0,29})([\s]+(a|de)sc)?[\s]*(,[\s]*([a-z]{1}[A-Za-z0-9_]{0,29})([\s]+(a|de)sc)?[\s]*)*""".r
   /**
   ### 用户注册
     **/
@@ -259,6 +260,11 @@ override def login(request: LoginUserRequest): LoginUserResponse ={
 
   override def findUsersByPage(request: FindUsersByPageRequest): FindUsersByPageResponse =
     {
+      Assert.assert(
+        request.pageRequest.sortFields.isEmpty ||
+        ORDER_REG.pattern.matcher(request.pageRequest.sortFields.get).matches,
+        CommonException.illegalArgumentException("排序字段不合法")
+      )
       val obj: List[GetUserResponse] =
         for(r <- userDao.queryUsersByPage(request))
           yield {
